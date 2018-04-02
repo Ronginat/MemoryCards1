@@ -3,19 +3,22 @@ package afeka.com.memorycards1;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener{
+public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemClickListener{
 
-    public static final String EXTRA_MESSAGE = "afeka.com.memorycards1.MESSAGE";
+    final String TAG = "Levels";
+    String name = "", age = "";
     TextView textName, textAge;
     Button button;
     Spinner spinnerLevels;
@@ -24,6 +27,17 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_levels);
 
+        Intent intent = getIntent();
+        Bundle b = intent.getExtras();
+
+        if(b!=null)
+        {
+            Log.e(TAG,"trying to get name&age");
+            name =(String) b.get(MainActivity.EXTRA_MESSAGE_NAME);
+            age =(String) b.get(MainActivity.EXTRA_MESSAGE_AGE);
+        }
+        //name = intent.getStringExtra(MainActivity.EXTRA_MESSAGE_NAME);
+        //age = intent.getStringExtra(MainActivity.EXTRA_MESSAGE_AGE);
         bindUI();
     }
 
@@ -31,12 +45,20 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
 
     private void bindUI()
     {
-        textName = findViewById(R.id.textViewName);
-        textAge = findViewById(R.id.textViewAge);
-        button = findViewById(R.id.buttonPlay);
-        spinnerLevels = findViewById(R.id.spinnerLevels);
-        spinnerLevels.setOnItemSelectedListener(this);
-        spinnerLevels.setSelected(false);
+        Log.e(TAG,"in bindUI");
+        textName = findViewById(R.id.levels_textView_name);
+        textAge = findViewById(R.id.levels_textView_age);
+        button = findViewById(R.id.levels_button_play);
+
+        textName.setText(name);
+        textAge.setText(age);
+
+        spinnerLevels = findViewById(R.id.levels_spinner_levels);
+        Log.e(TAG,"before setOnClick");
+        //spinnerLevels.setOnItemSelectedListener(this);
+        spinnerLevels.setOnItemClickListener(this);
+        Log.e(TAG,"after setOnClick");
+        //spinnerLevels.setSelected(false);
 
         List<String> spinnerList = new ArrayList<>();
         spinnerList.add("Easy");
@@ -45,21 +67,43 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerList);
+        Log.e(TAG,"new dataAdapter");
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Log.e(TAG,"setDropDown");
         spinnerLevels.setAdapter(dataAdapter);
+        Log.e(TAG,"end bindUI");
     }
 
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Log.e(TAG,"in ItemSelected");
         String selection = adapterView.getItemAtPosition(i).toString();
-        Intent intent = new Intent(this, GameActivityEasy.class);
-        intent.putExtra(EXTRA_MESSAGE, selection);
-        startActivity(intent);
+        Intent intent = null;
+        switch (selection){
+            case "Easy":
+                Log.e(TAG,"Easy");
+                intent = new Intent(this, GameActivityEasy.class);
+                break;
+            case "Medium":
+                Log.e(TAG,"Medium");
+                //intent = new Intent(this, GameActivityMedium.class);
+                break;
+            case "Hard":
+                Log.e(TAG,"Hard");
+                //intent = new Intent(this, GameActivityHard.class);
+                break;
+            default:
+                Toast.makeText(getApplicationContext(),Strings.wrong_input_levels_activity,Toast.LENGTH_SHORT).show();
+
+        }
+
+        if(intent != null){
+            Log.e(TAG,"calling intent");
+            intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
+            startActivity(intent);
+        }
+        Log.e(TAG,"end ItemSelected");
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
 }

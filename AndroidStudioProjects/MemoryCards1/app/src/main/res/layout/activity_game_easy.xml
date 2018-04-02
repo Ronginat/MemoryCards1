@@ -8,15 +8,15 @@
     tools:layout_editor_absoluteY="73dp">
 
     <ImageButton
-        android:id="@+id/imageButton1"
+        android:id="@+id/gameEasy_imageButton1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAlignBottom="true"
         android:saveEnabled="false"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton3"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        app:layout_constraintBottom_toTopOf="@+id/gameEasy_imageButton3"
+        app:layout_constraintEnd_toStartOf="@+id/gameEasy_imageButton2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,38 +24,38 @@
         app:layout_constraintVertical_chainStyle="spread" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/gameEasy_imageButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAlignBottom="true"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton4"
+        app:layout_constraintBottom_toTopOf="@+id/gameEasy_imageButton4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toEndOf="@+id/imageButton1"
+        app:layout_constraintStart_toEndOf="@+id/gameEasy_imageButton1"
         app:layout_constraintTop_toBottomOf="@+id/editTextTimer"
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_optimizationLevel="chains" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/gameEasy_imageButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAlignBottom="true"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton4"
+        app:layout_constraintEnd_toStartOf="@+id/gameEasy_imageButton4"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton1"
+        app:layout_constraintTop_toBottomOf="@+id/gameEasy_imageButton1"
         app:layout_constraintVertical_chainStyle="spread" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/gameEasy_imageButton4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAlignBottom="true"
@@ -65,8 +65,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toEndOf="@+id/imageButton3"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/gameEasy_imageButton3"
+        app:layout_constraintTop_toBottomOf="@+id/gameEasy_imageButton2"
         app:layout_constraintVertical_chainStyle="spread" />
 
     <TextView
