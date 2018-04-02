@@ -9,13 +9,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemClickListener{
+public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener{
 
     final String TAG = "Levels";
     String name = "", age = "";
@@ -55,15 +56,16 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemC
 
         spinnerLevels = findViewById(R.id.levels_spinner_levels);
         Log.e(TAG,"before setOnClick");
-        //spinnerLevels.setOnItemSelectedListener(this);
-        spinnerLevels.setOnItemClickListener(this);
+        spinnerLevels.setOnItemSelectedListener(this);
         Log.e(TAG,"after setOnClick");
         //spinnerLevels.setSelected(false);
 
         List<String> spinnerList = new ArrayList<>();
+        spinnerList.add("");
         spinnerList.add("Easy");
         spinnerList.add("Medium");
         spinnerList.add("Hard");
+
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerList);
@@ -71,12 +73,13 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemC
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Log.e(TAG,"setDropDown");
         spinnerLevels.setAdapter(dataAdapter);
+
         Log.e(TAG,"end bindUI");
     }
 
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         Log.e(TAG,"in ItemSelected");
         String selection = adapterView.getItemAtPosition(i).toString();
         Intent intent = null;
@@ -93,6 +96,8 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemC
                 Log.e(TAG,"Hard");
                 //intent = new Intent(this, GameActivityHard.class);
                 break;
+            case "":
+                break;
             default:
                 Toast.makeText(getApplicationContext(),Strings.wrong_input_levels_activity,Toast.LENGTH_SHORT).show();
 
@@ -104,6 +109,11 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemC
             startActivity(intent);
         }
         Log.e(TAG,"end ItemSelected");
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
 }
