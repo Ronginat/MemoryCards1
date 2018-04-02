@@ -31,19 +31,19 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
 
     private void bindUI()
     {
-        textName = (TextView)findViewById(R.id.textViewName);
-        textAge = (TextView)findViewById(R.id.textViewAge);
-        button = (Button)findViewById(R.id.buttonPlay);
-        spinnerLevels = (Spinner)findViewById(R.id.spinnerLevels);
+        textName = findViewById(R.id.textViewName);
+        textAge = findViewById(R.id.textViewAge);
+        button = findViewById(R.id.buttonPlay);
+        spinnerLevels = findViewById(R.id.spinnerLevels);
         spinnerLevels.setOnItemSelectedListener(this);
         spinnerLevels.setSelected(false);
 
-        List<String> spinnerList = new ArrayList<String>();
+        List<String> spinnerList = new ArrayList<>();
         spinnerList.add("Easy");
         spinnerList.add("Medium");
         spinnerList.add("Hard");
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerList);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLevels.setAdapter(dataAdapter);
@@ -53,7 +53,7 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String selection = adapterView.getItemAtPosition(i).toString();
-        Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, GameActivityEasy.class);
         intent.putExtra(EXTRA_MESSAGE, selection);
         startActivity(intent);
     }
