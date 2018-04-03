@@ -16,13 +16,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener{
+public class LevelsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     final String TAG = "Levels";
+    int itemSelectedCheck = 0;
     String name = "", age = "";
     TextView textName, textAge;
     Button button;
     Spinner spinnerLevels;
+    ArrayAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +53,8 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
         textAge = findViewById(R.id.levels_textView_age);
         button = findViewById(R.id.levels_button_play);
 
-        textName.setText(name);
-        textAge.setText(age);
+        textName.setText("name: " + name);
+        textAge.setText("age: " + age);
 
         spinnerLevels = findViewById(R.id.levels_spinner_levels);
         Log.e(TAG,"before setOnClick");
@@ -60,19 +62,20 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
         Log.e(TAG,"after setOnClick");
         //spinnerLevels.setSelected(false);
 
-        List<String> spinnerList = new ArrayList<>();
-        spinnerList.add("");
-        spinnerList.add("Easy");
-        spinnerList.add("Medium");
-        spinnerList.add("Hard");
+        //List<String> spinnerList = new ArrayList<>();
+        //spinnerList.add("");
+        //spinnerList.add("Easy");
+        //spinnerList.add("Medium");
+        //spinnerList.add("Hard");
 
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, spinnerList);
+        //ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+          //      android.R.layout.simple_spinner_item, spinnerList);
+        adapter = ArrayAdapter.createFromResource(this, R.array.spinner_options, android.R.layout.simple_spinner_item);
         Log.e(TAG,"new dataAdapter");
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Log.e(TAG,"setDropDown");
-        spinnerLevels.setAdapter(dataAdapter);
+        spinnerLevels.setAdapter(adapter);
 
         Log.e(TAG,"end bindUI");
     }
@@ -81,32 +84,38 @@ public class LevelsActivity extends AppCompatActivity implements Spinner.OnItemS
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         Log.e(TAG,"in ItemSelected");
-        String selection = adapterView.getItemAtPosition(i).toString();
-        Intent intent = null;
-        switch (selection){
-            case "Easy":
-                Log.e(TAG,"Easy");
-                intent = new Intent(this, GameActivityEasy.class);
-                break;
-            case "Medium":
-                Log.e(TAG,"Medium");
-                //intent = new Intent(this, GameActivityMedium.class);
-                break;
-            case "Hard":
-                Log.e(TAG,"Hard");
-                //intent = new Intent(this, GameActivityHard.class);
-                break;
-            case "":
-                break;
-            default:
-                Toast.makeText(getApplicationContext(),Strings.wrong_input_levels_activity,Toast.LENGTH_SHORT).show();
-
+        if(itemSelectedCheck == 0){
+            Toast.makeText(getBaseContext(),adapterView.getItemAtPosition(i) + " is selected", Toast.LENGTH_LONG).show();
+            itemSelectedCheck++;
         }
+        else {
+            String selection = adapterView.getItemAtPosition(i).toString();
+            Intent intent = null;
+            switch (selection) {
+                case "Easy":
+                    Log.e(TAG, "Easy");
+                    intent = new Intent(this, GameActivityEasy.class);
+                    break;
+                case "Medium":
+                    Log.e(TAG, "Medium");
+                    //intent = new Intent(this, GameActivityMedium.class);
+                    break;
+                case "Hard":
+                    Log.e(TAG, "Hard");
+                    //intent = new Intent(this, GameActivityHard.class);
+                    break;
+                case "":
+                    break;
+                default:
+                    Toast.makeText(getApplicationContext(), Strings.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
 
-        if(intent != null){
-            Log.e(TAG,"calling intent");
-            intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
-            startActivity(intent);
+            }
+
+            if (intent != null) {
+                Log.e(TAG, "calling intent");
+                intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
+                startActivity(intent);
+            }
         }
         Log.e(TAG,"end ItemSelected");
     }

@@ -41,7 +41,7 @@ public class GameActivityEasy extends AppCompatActivity {
     private void bindUI() {
         textName = findViewById(R.id.gameEasy_textView_name);
         timer = findViewById(R.id.gameEasy_textView_timer);
-        textName.setText(name);
+        textName.setText("name: " + name);
 
         cubes[0] = findViewById(R.id.gameEasy_imageButton1);
         cubes[1] = findViewById(R.id.gameEasy_imageButton2);
