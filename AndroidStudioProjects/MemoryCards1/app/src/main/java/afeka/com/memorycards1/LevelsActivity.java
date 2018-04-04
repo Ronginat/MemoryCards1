@@ -53,7 +53,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
         Log.e(TAG,"in bindUI");
         textName = findViewById(R.id.levels_textView_name);
         textAge = findViewById(R.id.levels_textView_age);
-        button = findViewById(R.id.levels_button_play);
+        //button = findViewById(R.id.levels_button_play);
 
         textName.setText("name: " + name);
         textAge.setText("age: " + age);
