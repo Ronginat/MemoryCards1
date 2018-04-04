@@ -25,6 +25,8 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     Button button;
     Spinner spinnerLevels;
     ArrayAdapter adapter;
+    private int options;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
 
         spinnerLevels = findViewById(R.id.levels_spinner_levels);
         Log.e(TAG,"before setOnClick");
+
         spinnerLevels.setOnItemSelectedListener(this);
         Log.e(TAG,"after setOnClick");
         //spinnerLevels.setSelected(false);
@@ -84,7 +87,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         Log.e(TAG,"in ItemSelected");
-        if(itemSelectedCheck == 0){
+        if(false){
             Toast.makeText(getBaseContext(),adapterView.getItemAtPosition(i) + " is selected", Toast.LENGTH_LONG).show();
             itemSelectedCheck++;
         }
@@ -92,19 +95,19 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             String selection = adapterView.getItemAtPosition(i).toString();
             Intent intent = null;
             switch (selection) {
-                case "Easy":
+                case "Easy 2x2":
                     Log.e(TAG, "Easy");
                     intent = new Intent(this, GameActivityEasy.class);
                     break;
-                case "Medium":
+                case "Medium 4x4":
                     Log.e(TAG, "Medium");
                     //intent = new Intent(this, GameActivityMedium.class);
                     break;
-                case "Hard":
+                case "Hard 8x8":
                     Log.e(TAG, "Hard");
                     //intent = new Intent(this, GameActivityHard.class);
                     break;
-                case "":
+                case "Choose a level":
                     break;
                 default:
                     Toast.makeText(getApplicationContext(), Strings.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
@@ -124,5 +127,4 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
-
 }

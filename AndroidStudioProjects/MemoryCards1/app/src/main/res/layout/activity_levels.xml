@@ -10,8 +10,10 @@
         android:id="@+id/levels_textView_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="65dp"
+        android:layout_marginEnd="32dp"
         android:text="TextView"
+        android:textAlignment="textStart"
+        android:textSize="24sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/levels_textView_age"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -19,9 +21,11 @@
         android:id="@+id/levels_textView_age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="85dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="45dp"
         android:text="TextView"
+        android:textAlignment="textStart"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,23 +37,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:tooltipText="Choose a level"
-        app:layout_constraintBottom_toTopOf="@+id/levels_button_play"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/levels_textView_name" />
 
-    <Button
-        android:id="@+id/levels_button_play"
-        android:layout_width="127dp"
-        android:layout_height="59dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Play"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

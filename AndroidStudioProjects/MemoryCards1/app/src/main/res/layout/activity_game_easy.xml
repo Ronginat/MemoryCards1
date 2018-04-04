@@ -19,9 +19,11 @@
         app:layout_constraintEnd_toStartOf="@+id/gameEasy_imageButton2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTimer"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintVertical_weight="1" />
 
     <ImageButton
         android:id="@+id/gameEasy_imageButton2"
@@ -34,9 +36,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/gameEasy_imageButton1"
         app:layout_constraintTop_toBottomOf="@+id/editTextTimer"
         app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintVertical_weight="1"
         app:layout_optimizationLevel="chains" />
 
     <ImageButton
@@ -50,9 +54,11 @@
         app:layout_constraintEnd_toStartOf="@+id/gameEasy_imageButton4"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gameEasy_imageButton1"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintVertical_weight="1" />
 
     <ImageButton
         android:id="@+id/gameEasy_imageButton4"
@@ -65,9 +71,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/gameEasy_imageButton3"
         app:layout_constraintTop_toBottomOf="@+id/gameEasy_imageButton2"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintVertical_weight="1" />
 
     <TextView
         android:id="@+id/gameEasy_textView_name"
@@ -76,7 +84,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="Name"
-        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -87,7 +96,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Timer"
-        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
