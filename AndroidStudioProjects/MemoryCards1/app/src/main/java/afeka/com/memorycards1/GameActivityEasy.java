@@ -1,7 +1,7 @@
 package afeka.com.memorycards1;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GameActivityEasy extends AppCompatActivity implements View.OnClickListener{
 
@@ -27,10 +25,11 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
     Integer[] intCubes = {1,1,2,2};
     List<Integer> shuffledCubesIds;// = new ArrayList<Integer>(Arrays.<Integer>asList(intCubes));
     ImageButton[] cubes;// = new ImageButton[numCubes];
-    Map<ImageButton, Integer> cubeAndImage;
+
     View clickedCube;
     TextView textName, timer;
     String username = "default name";
+    MyAsyncTask asyncTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +37,9 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_easy);
         cubes = new ImageButton[numCubes];
-        shuffledCubesIds = new ArrayList<Integer>(Arrays.<Integer>asList(intCubes));
+        shuffledCubesIds = new ArrayList<>(Arrays.<Integer>asList(intCubes));
 
-        cubeAndImage = new HashMap<>();
-
+        asyncTask = new MyAsyncTask();
 
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
@@ -62,14 +60,22 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         clickedCube = null;
         clickedCubeId = -1;
         matchCounter = 0;
+        timer.setText("30:00");
 
+        asyncTask.execute(Constants.EasyTime);
+        for (ImageButton cube: cubes){
+            cube.setTag(0);
+            cube.setEnabled(true);
+            cube.setImageResource(R.mipmap.ic_launcher);
+        }
         // start timer...
     }
 
     @Override
     protected void onStop() {
+        Log.e(TAG, "e-onStop");
+        //asyncTask.cancel(true);
         super.onStop();
-        Log.e(TAG,"e-onStop");
 
         // stop timer...
     }
@@ -113,11 +119,11 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         else if(clickedCube.getId() == view.getId()) // same button clicked twice
         {
             //clickedCube.setBackgroundColor(Color.WHITE);
-            revealCube(view, viewId);
-            setAllEnabledOrDisabled(false);
-            delay();
+            //revealCube(view, viewId);
+            //setAllEnabledOrDisabled(false);
+            //delay();
             ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
-            setAllEnabledOrDisabled(true);
+            //setAllEnabledOrDisabled(true);
             clickedCube = null;
             clickedCubeId = -1;
         }
@@ -125,21 +131,25 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         {
             revealCube(view, viewId);
             setAllEnabledOrDisabled(false);
-            delay();
-            starCubes(clickedCube, view);
+            delay(Constants.delay_for_star_cubes, clickedCube, view);
+            //starCubes(clickedCube, view);
+            View temp = clickedCube;
             clickedCube = null;
             clickedCubeId = -1;
             setAllEnabledOrDisabled(true);
+            //temp.setEnabled(false);
+            //view.setEnabled(false);
             FoundAMatch();
         }
         else if(clickedCube.getId() != viewId) // the two cubes are not a match
         {
             revealCube(view, viewId);
             setAllEnabledOrDisabled(false);
-            delay();
-            hideCubes(clickedCube, view);
+            delay(Constants.delay_for_hide_cubes, clickedCube, view);
+            //hideCubes(clickedCube, view);
             setAllEnabledOrDisabled(true);
             clickedCube = null;
+            clickedCubeId = -1;
         }
         else
         {
@@ -173,18 +183,11 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
     private void starCubes(View alreadyClickedCube, View currentClickedCube){
         ((ImageButton)alreadyClickedCube).setImageResource(R.drawable.star);
         ((ImageButton)currentClickedCube).setImageResource(R.drawable.star);
-        alreadyClickedCube.setTag(Strings.starTag);
-        currentClickedCube.setTag(Strings.starTag);
+        alreadyClickedCube.setTag(Constants.starTag);
+        currentClickedCube.setTag(Constants.starTag);
         //alreadyClickedCube.setEnabled(false);
         //currentClickedCube.setEnabled(false);
     }
-
-    private void pairCubeToImage(){
-        for(int i = 0; i < numCubes; i++){
-            cubeAndImage.put(cubes[i], shuffledCubesIds.get(i));
-        }
-    }
-
 
     private void FoundAMatch()
     {
@@ -192,27 +195,44 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         matchCounter += 2;
         if(matchCounter == numCubes)
         {
-            Toast.makeText(getApplicationContext(),"Game Finished!",Toast.LENGTH_SHORT).show();
-            Handler hand = new Handler();
-            hand.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //reset.performClick();
-                }
-            }, 1000);
+            Log.e(TAG,"found match finish");
+            asyncTask.cancel(true);
+            onStop();
+            //onStart();
+            //Toast.makeText(getApplicationContext(),"Game Finished!",Toast.LENGTH_SHORT).show();
+            //Handler hand = new Handler();
+            //hand.postDelayed(new Runnable() {
+             //   @Override
+             //   public void run() {asyncTask.cancel(true);//reset.performClick();
+             //   }
+            //}, 500);
         }
     }
 
-    private void delay(){
+    private void delay(int i, final View view1, final View view2){
+        Handler hand = new Handler();
+        switch (i){
+            case Constants.delay_for_hide_cubes:
+                hand.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideCubes(view1, view2);
+                    }
+                }, 600);
+                break;
+            case Constants.delay_for_star_cubes:
+                hand.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        starCubes(view1, view2);
+                    }
+                }, 600);
+                break;
+        }
         //setAllEnabledOrDisabled(false);
         //delay
-        Handler hand = new Handler();
-        hand.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //reset.performClick();
-            }
-        }, 1000);
+        //Handler hand = new Handler();
+
         //setAllEnabledOrDisabled(true);
     }
 
@@ -220,15 +240,15 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         Log.e(TAG,"in setAllEnabled");
         for (ImageButton cube: cubes) {
             if(bool == true)
-                if(cube.getTag().equals(Strings.starTag))
+                if(cube.getTag().equals(Constants.starTag))
                     Log.e(TAG,"a star");
-                if(!cube.getTag().equals(Strings.starTag)){
+                if(!cube.getTag().equals(Constants.starTag)){
                     Log.e(TAG,"not a star");
                     cube.setEnabled(bool);
                 }
 
             else
-                cube.setEnabled(bool);
+                cube.setEnabled(false);
         }
         Log.e(TAG,"end setAllEnabled");
     }
@@ -259,6 +279,99 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
             default: {
                 break;
             }
+        }
+    }
+
+    /**
+     * sub-class of AsyncTask
+     */
+    protected class MyAsyncTask extends AsyncTask<Integer, Integer, String> {
+        final String Tag = "AsyncTimer";
+        // -- run intensive processes here
+        // -- notice that the datatype of the first param in the class definition matches the param passed to this
+        // method
+        // -- and that the datatype of the last param in the class definition matches the return type of this method
+        @Override
+        protected String doInBackground(Integer... params) {
+            Log.i(TAG, "doInBackground()");
+            // -- on every iteration
+            // -- runs a while loop that causes the thread to sleep for 1000 milliseconds
+            // -- publishes the progress - calls the onProgressUpdate handler defined below
+            // -- and increments the counter variable i by one
+            int i = 0;
+
+            while (i < params[0]) {
+                if(isCancelled()) {
+                    Log.i(Tag, "doInBackground cancelled");
+                    return null;
+                }
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {
+                    Log.i(Tag, e.getMessage());
+                }
+
+                if(isCancelled()) {
+                    Log.i(Tag, "doInBackground cancelled");
+                    return "Cancelled";
+                }
+                i++;
+                publishProgress(i, params[0]);
+            }
+            try {
+                Thread.sleep(1000);
+            }
+
+            catch (Exception e) {
+                Log.i(Tag, e.getMessage());
+            }
+            return "COMPLETE!";
+        }
+
+        // -- gets called just before thread begins
+        @Override
+        protected void onPreExecute() {
+            Log.i(TAG, "onPreExecute()");
+            super.onPreExecute();
+        }
+
+        // -- called from the publish progress
+        // -- notice that the datatype of the second param gets passed to this method
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(values[0]));
+            int timeElapsed = values[0];
+            int totalTime = values[1];
+            int timeRemaining = totalTime - timeElapsed;
+            String timeRemains = timeRemaining + ":00";
+            if(timeRemaining < 10)
+                timeRemains = "0".concat(timeRemains);
+
+            //String timeRemains = timer.getText().toString();
+            //int timeRemainsInt = Integer.parseInt(timeRemains.split(":")[0]);
+            timer.setText(timeRemains);
+        }
+
+        @Override
+        protected void onCancelled(){
+            Log.e(Tag, "onCancelled");
+            super.onCancelled();
+            Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
+            //onStop();
+            onStart();
+        }
+        // -- called as soon as doInBackground method completes
+        // -- notice that the third param gets passed to this method
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.i(TAG, "onPostExecute(): " + result);
+                //timer.setText(result);
+            Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
+            onStop();
+            onStart();
         }
     }
 }

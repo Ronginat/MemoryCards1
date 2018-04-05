@@ -9,19 +9,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LevelsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     final String TAG = "Levels";
     int itemSelectedCheck = 0;
     String name = "", age = "";
-    TextView textName, textAge;
+    TextView textName, textAge, textResult;
     Button button;
     Spinner spinnerLevels;
     ArrayAdapter adapter;
@@ -47,17 +43,16 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
 
-
     private void bindUI()
     {
         Log.e(TAG,"in bindUI");
         textName = findViewById(R.id.levels_textView_name);
         textAge = findViewById(R.id.levels_textView_age);
-        //button = findViewById(R.id.levels_button_play);
+        textResult = findViewById(R.id.levels_textView_result);
 
         textName.setText("name: " + name);
         textAge.setText("age: " + age);
-
+        textResult.setVisibility(View.INVISIBLE);
         spinnerLevels = findViewById(R.id.levels_spinner_levels);
         Log.e(TAG,"before setOnClick");
 
@@ -110,7 +105,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
                 case "Choose a level":
                     break;
                 default:
-                    Toast.makeText(getApplicationContext(), Strings.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), Constants.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
 
             }
 
