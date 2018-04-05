@@ -1,5 +1,6 @@
 package afeka.com.memorycards1;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -197,15 +198,15 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         {
             Log.e(TAG,"found match finish");
             asyncTask.cancel(true);
-            onStop();
+            Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_OK, new Intent());
+            Handler hand = new Handler();
+            hand.postDelayed(new Runnable() {
+                @Override
+                public void run() {finish();}
+            }, 1000);
             //onStart();
             //Toast.makeText(getApplicationContext(),"Game Finished!",Toast.LENGTH_SHORT).show();
-            //Handler hand = new Handler();
-            //hand.postDelayed(new Runnable() {
-             //   @Override
-             //   public void run() {asyncTask.cancel(true);//reset.performClick();
-             //   }
-            //}, 500);
         }
     }
 
@@ -349,8 +350,6 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
             if(timeRemaining < 10)
                 timeRemains = "0".concat(timeRemains);
 
-            //String timeRemains = timer.getText().toString();
-            //int timeRemainsInt = Integer.parseInt(timeRemains.split(":")[0]);
             timer.setText(timeRemains);
         }
 
@@ -358,9 +357,10 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         protected void onCancelled(){
             Log.e(Tag, "onCancelled");
             super.onCancelled();
-            Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
+            onDestroy();
+            //Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
             //onStop();
-            onStart();
+            //onStart();
         }
         // -- called as soon as doInBackground method completes
         // -- notice that the third param gets passed to this method
@@ -370,8 +370,8 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
             Log.i(TAG, "onPostExecute(): " + result);
                 //timer.setText(result);
             Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
-            onStop();
-            onStart();
+            setResult(Activity.RESULT_CANCELED, new Intent());
+            finish();
         }
     }
 }

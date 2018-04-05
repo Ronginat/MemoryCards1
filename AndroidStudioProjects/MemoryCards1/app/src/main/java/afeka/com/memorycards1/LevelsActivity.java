@@ -1,5 +1,6 @@
 package afeka.com.memorycards1;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -112,7 +113,8 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             if (intent != null) {
                 Log.e(TAG, "calling intent");
                 intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
+                //startActivity(intent);
             }
         }
         Log.e(TAG,"end ItemSelected");
@@ -122,4 +124,18 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        spinnerLevels.setSelection(0);
+        textResult.setVisibility(View.VISIBLE);
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                textResult.setText("Well done!");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                textResult.setText("Maybe next time");
+            }
+        }
+    }//onActivityResult
 }
