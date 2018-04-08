@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class GameActivityHard extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
 
     final String TAG = "TheGame";
     ImageButton[] cubes;
@@ -41,7 +41,7 @@ public class GameActivityHard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.e(TAG,"e-onCreate");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_hard);
+        setContentView(R.layout.activity_game);
 
         Intent intent = getIntent();
         Bundle b = intent.getExtras();

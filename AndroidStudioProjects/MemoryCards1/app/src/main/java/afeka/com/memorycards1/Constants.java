@@ -1,13 +1,10 @@
 package afeka.com.memorycards1;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 class Constants {
-    static final String wrong_input_main_activity = "Fill your name and age";
     static final String main_activity_empty_name = "Fill your name";
     static final String main_activity_empty_age = "Fill your age";
+    static final String main_activity_invalid_age = "Age should be between 1 to 120";
     static final String wrong_input_levels_activity = "Choose a level";
 
     static final String game_finish = "Game Finished!";
@@ -39,8 +36,4 @@ class Constants {
     static final int level_easy = 1;
     static final int level_medium = 2;
     static final int level_hard = 3;
-
-
-    //static final String[] imagesNames = {"", "nougat", "oreo", "marshmallow", "", "", "", "", "", "star"};
-    //static final ArrayList<String> imagesIndexes = new ArrayList<String>(Arrays.asList(imagesNames));
 }

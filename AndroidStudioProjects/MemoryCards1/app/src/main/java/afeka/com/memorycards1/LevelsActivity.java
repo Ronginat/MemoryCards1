@@ -95,19 +95,17 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
                 case "Easy 2x2":
                     level = Constants.level_easy;
                     Log.e(TAG, "Easy");
-                    //intent = new Intent(this, GameActivityEasy.class);
-                    intent = new Intent(this, GameActivityHard.class);
+                    intent = new Intent(this, GameActivity.class);
                     break;
                 case "Medium 4x4":
                     level = Constants.level_medium;
                     Log.e(TAG, "Medium");
-                    intent = new Intent(this, GameActivityHard.class);
-                    //intent = new Intent(this, GameActivityMedium.class);
+                    intent = new Intent(this, GameActivity.class);
                     break;
                 case "Hard 5x5":
                     level = Constants.level_hard;
                     Log.e(TAG, "Hard");
-                    intent = new Intent(this, GameActivityHard.class);
+                    intent = new Intent(this, GameActivity.class);
                     break;
                 case "Choose a level":
                     break;
@@ -121,7 +119,6 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
                 intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
                 intent.putExtra(MainActivity.EXTRA_MESSAGE_LEVEL, level);
                 startActivityForResult(intent, 1);
-                //startActivity(intent);
             }
         }
         Log.e(TAG,"end ItemSelected");
