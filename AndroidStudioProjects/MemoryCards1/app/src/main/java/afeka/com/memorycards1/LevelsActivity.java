@@ -88,20 +88,26 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             itemSelectedCheck++;
         }
         else {
+            int level = Constants.level_none;
             String selection = adapterView.getItemAtPosition(i).toString();
             Intent intent = null;
             switch (selection) {
                 case "Easy 2x2":
+                    level = Constants.level_easy;
                     Log.e(TAG, "Easy");
-                    intent = new Intent(this, GameActivityEasy.class);
+                    //intent = new Intent(this, GameActivityEasy.class);
+                    intent = new Intent(this, GameActivityHard.class);
                     break;
                 case "Medium 4x4":
+                    level = Constants.level_medium;
                     Log.e(TAG, "Medium");
+                    intent = new Intent(this, GameActivityHard.class);
                     //intent = new Intent(this, GameActivityMedium.class);
                     break;
-                case "Hard 8x8":
+                case "Hard 5x5":
+                    level = Constants.level_hard;
                     Log.e(TAG, "Hard");
-                    //intent = new Intent(this, GameActivityHard.class);
+                    intent = new Intent(this, GameActivityHard.class);
                     break;
                 case "Choose a level":
                     break;
@@ -113,6 +119,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             if (intent != null) {
                 Log.e(TAG, "calling intent");
                 intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
+                intent.putExtra(MainActivity.EXTRA_MESSAGE_LEVEL, level);
                 startActivityForResult(intent, 1);
                 //startActivity(intent);
             }
@@ -136,6 +143,8 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             if (resultCode == Activity.RESULT_CANCELED) {
                 textResult.setText("Maybe next time");
             }
+            if(resultCode == Activity.RESULT_FIRST_USER)
+                textResult.setText("Oops, an error occurred");
         }
     }//onActivityResult
 }

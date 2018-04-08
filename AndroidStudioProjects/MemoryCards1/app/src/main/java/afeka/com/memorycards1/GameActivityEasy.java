@@ -63,28 +63,28 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         matchCounter = 0;
         timer.setText("30:00");
 
-        asyncTask.execute(Constants.EasyTime);
         for (ImageButton cube: cubes){
             cube.setTag(0);
             cube.setEnabled(true);
             cube.setImageResource(R.mipmap.ic_launcher);
         }
-        // start timer...
+
+        asyncTask.execute(Constants.EasyTime); // start timer
     }
 
     @Override
     protected void onStop() {
         Log.e(TAG, "e-onStop");
-        //asyncTask.cancel(true);
         super.onStop();
-
         // stop timer...
+        if(!asyncTask.isCancelled())
+            asyncTask.cancel(true);
     }
 
     private void bindUI() {
         textName = findViewById(R.id.gameEasy_textView_name);
         timer = findViewById(R.id.gameEasy_textView_timer);
-        textName.setText("name: " + username);
+        textName.setText(String.format("%s: %s","name: " ,username));
 
         cubes[0] = findViewById(R.id.gameEasy_imageButton1);
         cubes[1] = findViewById(R.id.gameEasy_imageButton2);
@@ -119,12 +119,8 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         }
         else if(clickedCube.getId() == view.getId()) // same button clicked twice
         {
-            //clickedCube.setBackgroundColor(Color.WHITE);
-            //revealCube(view, viewId);
-            //setAllEnabledOrDisabled(false);
-            //delay();
             ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
-            //setAllEnabledOrDisabled(true);
+            view.setTag(0);
             clickedCube = null;
             clickedCubeId = -1;
         }
@@ -132,14 +128,10 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         {
             revealCube(view, viewId);
             setAllEnabledOrDisabled(false);
-            delay(Constants.delay_for_star_cubes, clickedCube, view);
-            //starCubes(clickedCube, view);
-            View temp = clickedCube;
+            starCubes(clickedCube, view);
             clickedCube = null;
             clickedCubeId = -1;
             setAllEnabledOrDisabled(true);
-            //temp.setEnabled(false);
-            //view.setEnabled(false);
             FoundAMatch();
         }
         else if(clickedCube.getId() != viewId) // the two cubes are not a match
@@ -182,12 +174,10 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
     }
 
     private void starCubes(View alreadyClickedCube, View currentClickedCube){
-        ((ImageButton)alreadyClickedCube).setImageResource(R.drawable.star);
-        ((ImageButton)currentClickedCube).setImageResource(R.drawable.star);
+        //((ImageButton)alreadyClickedCube).setImageResource(R.drawable.star);
+        //((ImageButton)currentClickedCube).setImageResource(R.drawable.star);
         alreadyClickedCube.setTag(Constants.starTag);
         currentClickedCube.setTag(Constants.starTag);
-        //alreadyClickedCube.setEnabled(false);
-        //currentClickedCube.setEnabled(false);
     }
 
     private void FoundAMatch()
@@ -198,7 +188,7 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         {
             Log.e(TAG,"found match finish");
             asyncTask.cancel(true);
-            Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), Constants.game_error, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK, new Intent());
             Handler hand = new Handler();
             hand.postDelayed(new Runnable() {
@@ -206,7 +196,6 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
                 public void run() {finish();}
             }, 1000);
             //onStart();
-            //Toast.makeText(getApplicationContext(),"Game Finished!",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -232,7 +221,6 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         }
         //setAllEnabledOrDisabled(false);
         //delay
-        //Handler hand = new Handler();
 
         //setAllEnabledOrDisabled(true);
     }
@@ -288,10 +276,7 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
      */
     protected class MyAsyncTask extends AsyncTask<Integer, Integer, String> {
         final String Tag = "AsyncTimer";
-        // -- run intensive processes here
-        // -- notice that the datatype of the first param in the class definition matches the param passed to this
-        // method
-        // -- and that the datatype of the last param in the class definition matches the return type of this method
+
         @Override
         protected String doInBackground(Integer... params) {
             Log.i(TAG, "doInBackground()");
@@ -338,7 +323,6 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         }
 
         // -- called from the publish progress
-        // -- notice that the datatype of the second param gets passed to this method
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -357,18 +341,15 @@ public class GameActivityEasy extends AppCompatActivity implements View.OnClickL
         protected void onCancelled(){
             Log.e(Tag, "onCancelled");
             super.onCancelled();
-            onDestroy();
+            //onDestroy();
             //Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
-            //onStop();
-            //onStart();
         }
         // -- called as soon as doInBackground method completes
-        // -- notice that the third param gets passed to this method
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             Log.i(TAG, "onPostExecute(): " + result);
-                //timer.setText(result);
+            //timer.setText(result);
             Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_CANCELED, new Intent());
             finish();
