@@ -140,10 +140,10 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             if(resultCode == Activity.RESULT_OK){
                 textResult.setText("Well done!");
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
+            else if (resultCode == Activity.RESULT_CANCELED) {
                 textResult.setText("Maybe next time");
             }
-            if(resultCode == Activity.RESULT_FIRST_USER)
+            else if(resultCode == Activity.RESULT_FIRST_USER)
                 textResult.setText("Oops, an error occurred");
         }
     }//onActivityResult

@@ -26,7 +26,7 @@ public class GameActivityHard extends AppCompatActivity {
     final String TAG = "TheGame";
     ImageButton[] cubes;
     String username = "default name", timerLevel = "";
-    int matchCounter = 0, clickedCubeId = -1, level = Constants.level_none, timerLevelNum;
+    int matchCounter = 0, clickedCubeImageId = -1, level = Constants.level_none, timerLevelNum;
     int numCubes, cubes_per_RowCol;
     View clickedCube;
     TextView textName, timer;
@@ -34,7 +34,8 @@ public class GameActivityHard extends AppCompatActivity {
     Integer[] intCubes;
     List<Integer> shuffledCubesIds;
 
-    MyAsyncTask asyncTask = null;
+    MyAsyncTaskTimer asyncTaskTimer = null;
+    int clickedCubePos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class GameActivityHard extends AppCompatActivity {
         }
 
         getMyLevelParameters();
-        asyncTask = new MyAsyncTask();
+        asyncTaskTimer = new MyAsyncTaskTimer();
 
         intCubes = new Integer[numCubes];
         int counter = 1;
@@ -61,9 +62,6 @@ public class GameActivityHard extends AppCompatActivity {
             intCubes[i+1] = counter;
             counter++;
         }
-        Log.e(TAG,"set intCubes last element");
-        if(numCubes % 2 == 1)
-            intCubes[numCubes - 1] = 0;
 
         shuffledCubesIds = new ArrayList<>(Arrays.<Integer>asList(intCubes));
 
@@ -82,18 +80,11 @@ public class GameActivityHard extends AppCompatActivity {
         Log.e(TAG,"e-onStart");
 
         clickedCube = null;
-        clickedCubeId = -1;
+        clickedCubeImageId = -1;
         matchCounter = 0;
         timer.setText(timerLevel);
 
-        //for (ImageButton cube: cubes){
-            //cube.setTag(0);
-            //cube.setOnClickListener(this);
-            //cube.setImageResource(R.mipmap.ic_launcher);
-            //cube.setEnabled(true);
-            //cube.setBackgroundColor(getTitleColor());
-        //}
-        asyncTask.execute(timerLevelNum); // start timer
+        asyncTaskTimer.execute(timerLevelNum); // start timer
     }
 
     @Override
@@ -101,8 +92,8 @@ public class GameActivityHard extends AppCompatActivity {
         Log.e(TAG, "e-onStop");
         super.onStop();
         // stop timer...
-        if(!asyncTask.isCancelled())
-            asyncTask.cancel(true);
+        if(!asyncTaskTimer.isCancelled())
+            asyncTaskTimer.cancel(true);
     }
 
     private void getMyLevelParameters() {
@@ -145,7 +136,21 @@ public class GameActivityHard extends AppCompatActivity {
             table.addView(tableRow);
 
             for(int col = 0; col < cubes_per_RowCol; col++){
-                final int position = row * cubes_per_RowCol + col;
+                if(cubes_per_RowCol % 2 == 1 && row == cubes_per_RowCol - 1 && col == cubes_per_RowCol - 1){
+                    ImageButton temp = new ImageButton(this);
+                    temp.setLayoutParams(new TableRow.LayoutParams(
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            1.0f
+                    ));
+                    setCubeProperties(temp);
+                    temp.setEnabled(false);
+                    temp.setVisibility(View.INVISIBLE);
+                    tableRow.addView(temp);
+                    break;
+                }
+
+                int position = row * cubes_per_RowCol + col;
                 final int FINAL_POSITION = position;
                 cubes[position] = new ImageButton(this);
                 cubes[position].setLayoutParams(new TableRow.LayoutParams(
@@ -160,17 +165,13 @@ public class GameActivityHard extends AppCompatActivity {
                 cubes[position].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.e(TAG,"cube["+position+"] clicked");
-                        checkClickedView(cubes[position], position, shuffledCubesIds.get(position));
+                        Log.e(TAG,"cube["+FINAL_POSITION+"] clicked");
+                        checkClickedView(cubes[FINAL_POSITION], FINAL_POSITION, shuffledCubesIds.get(FINAL_POSITION));
                     }
                 });
                 tableRow.addView(cubes[position]);
 
             }
-        }
-
-        for (ImageButton cube: cubes){
-            //cube.setOnClickListener(this);
         }
     }
 
@@ -213,52 +214,69 @@ public class GameActivityHard extends AppCompatActivity {
          * 1 - nougat
          * 2 - oreo
          * 3 - marshmallow
-         *
-         * 9 - star
-          */
+         * 4 - app_amor
+         * 5 - app_kcmprocessor
+         * 6 - app_kcmmidi
+         * 7 - app_gadu
+         * 8 - app_web
+         * 9 - app_pysol
+         * 10 - app_babelfish
+         * 11 - app_khelpcenter
+         * 12 - app_klaptopdaemon
+         */
+
 
     }
 
 
     public void checkClickedView(View view, int position, int viewId)
     {
+        MyAsyncTaskDelay asyncTaskDelay;
         if(clickedCube == null) // there isn't a first image revealed from current pair
         {
+            Log.e(TAG,"first cube of the pair");
             revealCube(view, viewId);
             //view.setBackgroundColor(Color.YELLOW);
             clickedCube = view;
-            clickedCubeId = viewId;
+            clickedCubeImageId = viewId;
+            clickedCubePos = position;
         }
-        else if(clickedCube.getId() == view.getId()) // same button clicked twice
-        {
+        //else if(clickedCube.getId() == view.getId()) // same button clicked twice
+
+        else if(clickedCubePos == position){
             Log.e(TAG,"same cube twice");
             ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
             view.setTag(0);
             clickedCube = null;
-            clickedCubeId = -1;
+            clickedCubeImageId = -1;
+            clickedCubePos = -1;
         }
-        else if(clickedCubeId == viewId) // found a match
+        else if(clickedCubeImageId == viewId) // found a match
         {
+            Log.e(TAG,"same cubes - match");
             revealCube(view, viewId);
             setAllEnabledOrDisabled(false);
             starCubes(clickedCube, view);
             clickedCube = null;
-            clickedCubeId = -1;
+            clickedCubeImageId = -1;
+            clickedCubePos = -1;
             setAllEnabledOrDisabled(true);
             FoundAMatch();
         }
         else if(clickedCube.getId() != viewId) // the two cubes are not a match
         {
+            Log.e(TAG,"different cubes - not match");
             revealCube(view, viewId);
-            setAllEnabledOrDisabled(false);
-            delayBeforeHideCubes(clickedCube, view);
-            //hideCubes(clickedCube, view);
-            setAllEnabledOrDisabled(true);
+            asyncTaskDelay = new MyAsyncTaskDelay(clickedCube, view);
+            asyncTaskDelay.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            //asyncTaskDelay.execute();
             clickedCube = null;
-            clickedCubeId = -1;
+            clickedCubeImageId = -1;
+            clickedCubePos = -1;
         }
         else
         {
+            Log.e(TAG,"or else");
             //do nothing
 
             //clickedCube = view;
@@ -267,9 +285,9 @@ public class GameActivityHard extends AppCompatActivity {
 
     private void revealCube(View cube, int cubeId){
         switch (cubeId){
-            case 0:
-                ((ImageButton)cube).setImageResource(R.drawable.app_help_index);
-                break;
+            //case 0:
+             //   ((ImageButton)cube).setImageResource(R.drawable.app_help_index);
+              //  break;
             case 1:
                 ((ImageButton)cube).setImageResource(R.drawable.android_nougat);
                 break;
@@ -329,8 +347,8 @@ public class GameActivityHard extends AppCompatActivity {
         if(matchCounter == numCubes)
         {
             Log.e(TAG,"found match finish");
-            asyncTask.cancel(true);
-            Toast.makeText(getApplicationContext(), Constants.game_error, Toast.LENGTH_SHORT).show();
+            asyncTaskTimer.cancel(true);
+            Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK, new Intent());
             Handler hand = new Handler();
             hand.postDelayed(new Runnable() {
@@ -360,24 +378,10 @@ public class GameActivityHard extends AppCompatActivity {
     }
 
 
-    private void delayBeforeHideCubes(final View view1, final View view2){
-        Handler hand = new Handler();
-        hand.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                hideCubes(view1, view2);
-            }
-        }, 600);
-        //setAllEnabledOrDisabled(false);
-        //delay
-
-        //setAllEnabledOrDisabled(true);
-    }
-
     /**
      * sub-class of AsyncTask
      */
-    protected class MyAsyncTask extends AsyncTask<Integer, Integer, String> {
+    protected class MyAsyncTaskTimer extends AsyncTask<Integer, Integer, String> {
         final String Tag = "AsyncTimer";
 
         @Override
@@ -456,6 +460,68 @@ public class GameActivityHard extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_CANCELED, new Intent());
             finish();
+        }
+    }
+
+
+    /**
+     * sub-class of AsyncTask
+     */
+    protected class MyAsyncTaskDelay extends AsyncTask<Void, Void, String> {
+        final String Tag = "AsyncDelay";
+        View view1, view2;
+
+        public MyAsyncTaskDelay(View alreadyClicked, View currentClicked){
+            view1 = alreadyClicked;
+            view2 = currentClicked;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            Log.i(TAG, "doInBackground()");
+            try {
+                Thread.sleep(1100);
+            }
+            catch (InterruptedException e) {
+                Log.i(Tag, e.getMessage());
+                Log.e(TAG, "doInBackground EXCEPTION");
+                return null;
+            }
+
+            return "COMPLETE!";
+        }
+
+        // -- gets called just before thread begins
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.e(TAG, "onPreExecute()");
+            for(ImageButton cube : cubes){
+                cube.setEnabled(false);
+            }
+            Log.e(TAG, "finish onPreExecute()");
+        }
+
+        // -- called from the publish progress
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(values[0]));
+        }
+
+        // -- called as soon as doInBackground method completes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.e(TAG, "onPostExecute(): " + result);
+            if(!result.equals(null)) {
+                for (ImageButton cube : cubes) {
+                    if (!cube.getTag().equals(Constants.starTag))
+                        cube.setEnabled(true);
+                }
+
+                hideCubes(view1, view2);
+            }
         }
     }
 }

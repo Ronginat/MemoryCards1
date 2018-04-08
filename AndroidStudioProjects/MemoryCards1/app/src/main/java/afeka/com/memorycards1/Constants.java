@@ -16,13 +16,13 @@ class Constants {
 
     static final int numcubesEasy = 4;
     static final int numcubesMedium = 16;
-    static final int numcubesHard = 25;
+    static final int numcubesHard = 24;
 
     static final int row_column_Easy = 2;
     static final int row_column_Medium = 4;
     static final int row_column_Hard = 5;
 
-    static final int starTag = 9;
+    static final int starTag = 17;
 
     static final int EasyTime = 30;
     static final int MediumTime = 45;
