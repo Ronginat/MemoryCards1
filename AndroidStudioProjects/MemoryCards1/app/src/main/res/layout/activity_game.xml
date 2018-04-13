@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="afeka.com.memorycards1.GameActivityEasy"
+    tools:context="afeka.com.memorycards1.GameActivity"
     tools:layout_editor_absoluteY="73dp">
 
 

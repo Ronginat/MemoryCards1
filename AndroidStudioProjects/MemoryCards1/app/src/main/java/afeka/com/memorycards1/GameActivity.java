@@ -3,6 +3,7 @@ package afeka.com.memorycards1;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,15 +26,15 @@ public class GameActivity extends AppCompatActivity {
     final String TAG = "TheGame";
     ImageButton[] cubes;
     String username = "default name", timerLevel = "";
-    int matchCounter = 0, clickedCubeImageId = -1, level = Constants.level_none, timerLevelNum;
+    int matchCounter = 0, level = Constants.level_none, timerLevelNum;
     int numCubes, cubes_per_RowCol;
     View clickedCube;
     TextView textName, timer;
     TableLayout table;
-    Integer[] intCubes;
-    List<Integer> shuffledCubesIds;
 
-    MyAsyncTaskTimer asyncTaskTimer = null;
+    List<Integer> allImages, myShuffledImages;
+
+    CountDownTimer downTimer = null;
     int clickedCubePos = -1;
 
     @Override
@@ -52,27 +52,19 @@ public class GameActivity extends AppCompatActivity {
         }
 
         getMyLevelParameters();
-        asyncTaskTimer = new MyAsyncTaskTimer();
 
-        intCubes = new Integer[numCubes];
-        int counter = 1;
-        Log.e(TAG,"set intCubes");
-        for(int i = 0; i < numCubes - 1; i+=2){
-            intCubes[i] = counter;
-            intCubes[i+1] = counter;
-            counter++;
-        }
-
-        shuffledCubesIds = new ArrayList<>(Arrays.<Integer>asList(intCubes));
+        createAllImagesList();
 
         cubes = new ImageButton[numCubes];
 
         //name = intent.getStringExtra(MainActivity.EXTRA_MESSAGE_NAME);
         bindUI();
 
-        Collections.shuffle(shuffledCubesIds);
         populateTable();
+        Log.e(TAG, "after populateTable()");
+        createMyShuffledImages(); // and set the cubes tags
     }
+
 
     @Override
     protected void onStart() { // or onResume
@@ -80,11 +72,34 @@ public class GameActivity extends AppCompatActivity {
         Log.e(TAG,"e-onStart");
 
         clickedCube = null;
-        clickedCubeImageId = -1;
         matchCounter = 0;
         timer.setText(timerLevel);
 
-        asyncTaskTimer.execute(timerLevelNum); // start timer
+        startTimer();
+    }
+
+    private void startTimer() {
+        downTimer = new CountDownTimer(timerLevelNum + 1000, 1000) {
+            // timerLevelNum + 1000 -> because i want to show the timer reaches 0 seconds left
+            @Override
+            public void onTick(long l) {
+                Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
+                long timeRemaining = l/1000 - 1;
+                String timeRemainStr = "" + timeRemaining;
+                if(timeRemaining < 10)
+                    timeRemainStr = "0".concat(timeRemainStr);
+
+                timer.setText(timeRemainStr);
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i(TAG, "onFinish()");
+                Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
+                setResult(Activity.RESULT_CANCELED, new Intent());
+                finish();
+            }
+        }.start();
     }
 
     @Override
@@ -92,8 +107,7 @@ public class GameActivity extends AppCompatActivity {
         Log.e(TAG, "e-onStop");
         super.onStop();
         // stop timer...
-        if(!asyncTaskTimer.isCancelled())
-            asyncTaskTimer.cancel(true);
+        downTimer.cancel();
     }
 
     private void getMyLevelParameters() {
@@ -123,7 +137,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
 
-
     private void populateTable() {
         Log.e(TAG,"in populateTable");
         for(int row = 0; row < cubes_per_RowCol; row++){
@@ -136,7 +149,7 @@ public class GameActivity extends AppCompatActivity {
             table.addView(tableRow);
 
             for(int col = 0; col < cubes_per_RowCol; col++){
-                if(cubes_per_RowCol % 2 == 1 && row == cubes_per_RowCol - 1 && col == cubes_per_RowCol - 1){
+                if(row == cubes_per_RowCol - 1 && col == cubes_per_RowCol - 1 && cubes_per_RowCol % 2 == 1){
                     ImageButton temp = new ImageButton(this);
                     temp.setLayoutParams(new TableRow.LayoutParams(
                             TableRow.LayoutParams.WRAP_CONTENT,
@@ -159,14 +172,13 @@ public class GameActivity extends AppCompatActivity {
                         1.0f
                 ));
                 Log.e(TAG,"init cube["+position+"]");
-                Log.e(TAG,"id is " + shuffledCubesIds.get(position));
                 setCubeProperties(cubes[position]);
 
                 cubes[position].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.e(TAG,"cube["+FINAL_POSITION+"] clicked");
-                        checkClickedView(cubes[FINAL_POSITION], FINAL_POSITION, shuffledCubesIds.get(FINAL_POSITION));
+                        checkClickedView(cubes[FINAL_POSITION], FINAL_POSITION);
                     }
                 });
                 tableRow.addView(cubes[position]);
@@ -176,7 +188,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setCubeProperties(ImageButton cube) {
-        cube.setTag(0);
         ViewGroup.LayoutParams params = cube.getLayoutParams();
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         params.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -188,15 +199,10 @@ public class GameActivity extends AppCompatActivity {
         cube.setAdjustViewBounds(true);
         cube.setPadding(0,0,0,0);
 
-        cube.setMinimumWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        cube.setMaxWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        cube.setMinimumHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-        cube.setMaxHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-
-        //cube.setMinimumWidth(cube.getMaxWidth());
-        //cube.setMaxWidth(cube.getMaxWidth());
-        //cube.setMinimumHeight(cube.getMaxHeight());
-        //cube.setMaxHeight(cube.getMaxHeight());
+        cube.setMinimumWidth(params.width);
+        cube.setMaxWidth(params.width);
+        cube.setMinimumHeight(params.height);
+        cube.setMaxHeight(params.height);
     }
 
     private void bindUI() {
@@ -223,118 +229,66 @@ public class GameActivity extends AppCompatActivity {
          * 10 - app_babelfish
          * 11 - app_khelpcenter
          * 12 - app_klaptopdaemon
+         *
+         * 20 - star = match
          */
 
 
     }
 
 
-    public void checkClickedView(View view, int position, int viewId)
-    {
+    public void checkClickedView(View view, int position){
+
         MyAsyncTaskDelay asyncTaskDelay;
         if(clickedCube == null) // there isn't a first image revealed from current pair
         {
             Log.e(TAG,"first cube of the pair");
-            revealCube(view, viewId);
-            //view.setBackgroundColor(Color.YELLOW);
+            revealCube(view);
             clickedCube = view;
-            clickedCubeImageId = viewId;
             clickedCubePos = position;
         }
-        //else if(clickedCube.getId() == view.getId()) // same button clicked twice
 
-        else if(clickedCubePos == position){
+        else if(clickedCubePos == position){ // same button clicked twice
             Log.e(TAG,"same cube twice");
             ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
-            view.setTag(0);
             clickedCube = null;
-            clickedCubeImageId = -1;
             clickedCubePos = -1;
         }
-        else if(clickedCubeImageId == viewId) // found a match
+        else if(clickedCube.getTag().equals(view.getTag())) // found a match
         {
             Log.e(TAG,"same cubes - match");
-            revealCube(view, viewId);
+            revealCube(view);
             setAllEnabledOrDisabled(false);
             starCubes(clickedCube, view);
             clickedCube = null;
-            clickedCubeImageId = -1;
             clickedCubePos = -1;
             setAllEnabledOrDisabled(true);
             FoundAMatch();
         }
-        else if(clickedCube.getId() != viewId) // the two cubes are not a match
+        else if(!clickedCube.getTag().equals(view.getTag())) // the two cubes are not a match
         {
             Log.e(TAG,"different cubes - not match");
-            revealCube(view, viewId);
+            revealCube(view);
             asyncTaskDelay = new MyAsyncTaskDelay(clickedCube, view);
             asyncTaskDelay.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            //asyncTaskDelay.execute();
             clickedCube = null;
-            clickedCubeImageId = -1;
             clickedCubePos = -1;
         }
         else
         {
             Log.e(TAG,"or else");
             //do nothing
-
-            //clickedCube = view;
         }
     }
 
-    private void revealCube(View cube, int cubeId){
-        switch (cubeId){
-            //case 0:
-             //   ((ImageButton)cube).setImageResource(R.drawable.app_help_index);
-              //  break;
-            case 1:
-                ((ImageButton)cube).setImageResource(R.drawable.android_nougat);
-                break;
-            case 2:
-                ((ImageButton)cube).setImageResource(R.drawable.android_oreo);
-                break;
-            case 3:
-                ((ImageButton)cube).setImageResource(R.drawable.androidmarshmallow);
-                break;
-            case 4:
-                ((ImageButton)cube).setImageResource(R.drawable.app_amor);
-                break;
-            case 5:
-                ((ImageButton)cube).setImageResource(R.drawable.app_kcmprocessor);
-                break;
-            case 6:
-                ((ImageButton)cube).setImageResource(R.drawable.app_kcmmidi);
-                break;
-            case 7:
-                ((ImageButton)cube).setImageResource(R.drawable.app_gadu);
-                break;
-            case 8:
-                ((ImageButton)cube).setImageResource(R.drawable.app_web);
-                break;
-            case 9:
-                ((ImageButton)cube).setImageResource(R.drawable.app_pysol);
-                break;
-            case 10:
-                ((ImageButton)cube).setImageResource(R.drawable.app_babelfish);
-                break;
-            case 11:
-                ((ImageButton)cube).setImageResource(R.drawable.app_khelpcenter);
-                break;
-            case 12:
-                ((ImageButton)cube).setImageResource(R.drawable.app_klaptopdaemon);
-                break;
-        }
-        cube.setTag(cubeId);
+    private void revealCube(View cube){
+        ((ImageButton)cube).setImageResource(Integer.parseInt(cube.getTag().toString()));
     }
 
     private void hideCubes(View alreadyClickedCube, View currentClickedCube){
         ((ImageButton)alreadyClickedCube).setImageResource(R.mipmap.ic_launcher);
         ((ImageButton)currentClickedCube).setImageResource(R.mipmap.ic_launcher);
-        alreadyClickedCube.setTag(0);
-        currentClickedCube.setTag(0);
     }
-
 
     private void starCubes(View alreadyClickedCube, View currentClickedCube){
         alreadyClickedCube.setTag(Constants.starTag);
@@ -347,122 +301,65 @@ public class GameActivity extends AppCompatActivity {
         if(matchCounter == numCubes)
         {
             Log.e(TAG,"found match finish");
-            asyncTaskTimer.cancel(true);
+            downTimer.cancel();
             Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK, new Intent());
             Handler hand = new Handler();
             hand.postDelayed(new Runnable() {
                 @Override
-                public void run() {finish();}
+                public void run() {
+                    finish();
+                }
             }, 1000);
             //onStart();
         }
     }
 
+    private void createMyShuffledImages() {
+        Log.e(TAG, "in createMyShuffledImages");
+        myShuffledImages = new ArrayList<>();
+        for(int i = 0; i < numCubes/2; i++){
+            myShuffledImages.add(allImages.get(i));
+            myShuffledImages.add(allImages.get(i));
+        }
+        // shuffle the current list of images
+        Collections.shuffle(myShuffledImages);
+        //set the Tags of the cubes
+        for(int i = 0; i < numCubes; i++){
+            cubes[i].setTag(myShuffledImages.get(i));
+        }
+    }
+
+    private void createAllImagesList() {
+        Log.e(TAG, "in createAllImagesList");
+        allImages = new ArrayList<>();
+        allImages.add(R.drawable.android_nougat);
+        allImages.add(R.drawable.android_oreo);
+        allImages.add(R.drawable.androidmarshmallow);
+        allImages.add(R.drawable.app_amor);
+        allImages.add(R.drawable.app_kcmprocessor);
+        allImages.add(R.drawable.app_kcmmidi);
+        allImages.add(R.drawable.app_gadu);
+        allImages.add(R.drawable.app_web);
+        allImages.add(R.drawable.app_pysol);
+        allImages.add(R.drawable.app_babelfish);
+        allImages.add(R.drawable.app_khelpcenter);
+        allImages.add(R.drawable.app_klaptopdaemon);
+
+        Collections.shuffle(allImages);
+    }
 
     private void setAllEnabledOrDisabled(boolean bool){
         Log.e(TAG,"in setAllEnabled");
         for (ImageButton cube: cubes) {
-            if(bool == true)
-                if(cube.getTag().equals(Constants.starTag))
-                    Log.e(TAG,"a star");
-            if(!cube.getTag().equals(Constants.starTag)){
-                Log.e(TAG,"not a star");
+            if(bool && !cube.getTag().equals(Constants.starTag)){
                 cube.setEnabled(bool);
             }
-
             else
                 cube.setEnabled(false);
         }
         Log.e(TAG,"end setAllEnabled");
     }
-
-
-    /**
-     * sub-class of AsyncTask
-     */
-    protected class MyAsyncTaskTimer extends AsyncTask<Integer, Integer, String> {
-        final String Tag = "AsyncTimer";
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            Log.i(TAG, "doInBackground()");
-            // -- on every iteration
-            // -- runs a while loop that causes the thread to sleep for 1000 milliseconds
-            // -- publishes the progress - calls the onProgressUpdate handler defined below
-            // -- and increments the counter variable i by one
-            int i = 0;
-
-            while (i < params[0]) {
-                if(isCancelled()) {
-                    Log.i(Tag, "doInBackground cancelled");
-                    return null;
-                }
-                try {
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e) {
-                    Log.i(Tag, e.getMessage());
-                }
-
-                if(isCancelled()) {
-                    Log.i(Tag, "doInBackground cancelled");
-                    return "Cancelled";
-                }
-                i++;
-                publishProgress(i, params[0]);
-            }
-            try {
-                Thread.sleep(1000);
-            }
-
-            catch (Exception e) {
-                Log.i(Tag, e.getMessage());
-            }
-            return "COMPLETE!";
-        }
-
-        // -- gets called just before thread begins
-        @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute()");
-            super.onPreExecute();
-        }
-
-        // -- called from the publish progress
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(values[0]));
-            int timeElapsed = values[0];
-            int totalTime = values[1];
-            int timeRemaining = totalTime - timeElapsed;
-            String timeRemains = timeRemaining + ":00";
-            if(timeRemaining < 10)
-                timeRemains = "0".concat(timeRemains);
-
-            timer.setText(timeRemains);
-        }
-
-        @Override
-        protected void onCancelled(){
-            Log.e(Tag, "onCancelled");
-            super.onCancelled();
-            //onDestroy();
-            //Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
-        }
-        // -- called as soon as doInBackground method completes
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Log.i(TAG, "onPostExecute(): " + result);
-            //timer.setText(result);
-            Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
-            setResult(Activity.RESULT_CANCELED, new Intent());
-            finish();
-        }
-    }
-
 
     /**
      * sub-class of AsyncTask
@@ -480,7 +377,7 @@ public class GameActivity extends AppCompatActivity {
         protected String doInBackground(Void... params) {
             Log.i(TAG, "doInBackground()");
             try {
-                Thread.sleep(1100);
+                Thread.sleep(1000);
             }
             catch (InterruptedException e) {
                 Log.i(Tag, e.getMessage());

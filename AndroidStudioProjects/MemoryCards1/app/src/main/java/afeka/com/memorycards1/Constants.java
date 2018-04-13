@@ -19,15 +19,15 @@ class Constants {
     static final int row_column_Medium = 4;
     static final int row_column_Hard = 5;
 
-    static final int starTag = 17;
+    static final int starTag = 20;
 
-    static final int EasyTime = 30;
-    static final int MediumTime = 45;
-    static final int HardTime = 60;
+    static final int EasyTime = 30000;
+    static final int MediumTime = 45000;
+    static final int HardTime = 60000;
 
-    static final String TimeEasyString = "30:00";
-    static final String TImeMediumString = "45:00";
-    static final String TimeHardString = "60:00";
+    static final String TimeEasyString = "30";
+    static final String TImeMediumString = "45";
+    static final String TimeHardString = "60";
 
     static final int delay_for_hide_cubes = 1;
     static final int delay_for_star_cubes = 2;
