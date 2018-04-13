@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity {
     List<Integer> allImages, myShuffledImages;
 
     CountDownTimer downTimer = null;
+    MyCountDownTimer myTimer = null;
     int clickedCubePos = -1;
     //endregion
 
@@ -63,8 +64,9 @@ public class GameActivity extends AppCompatActivity {
         populateTable();
         Log.e(TAG, "after populateTable()");
         createMyShuffledImages(); // and set the cubes tags
-    }
 
+        myTimer = new MyCountDownTimer(timerLevelNum, 500);
+    }
 
     @Override
     protected void onStart() { // or onResume
@@ -74,7 +76,7 @@ public class GameActivity extends AppCompatActivity {
         clickedCube = null;
         matchCounter = 0;
         timer.setText(timerLevel);
-        startTimer();
+        myTimer.resume();
     }
 
     @Override
@@ -82,7 +84,7 @@ public class GameActivity extends AppCompatActivity {
         Log.e(TAG, "e-onStop");
         super.onStop();
         // stop timer...
-        downTimer.cancel();
+        myTimer.pause();
     }
 
     private void getMyLevelParameters() {
@@ -258,7 +260,7 @@ public class GameActivity extends AppCompatActivity {
         if(matchCounter == numCubes)
         {
             Log.e(TAG,"found match finish");
-            downTimer.cancel();
+            myTimer.cancel();
             Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK, new Intent());
             Handler hand = new Handler();
@@ -285,49 +287,43 @@ public class GameActivity extends AppCompatActivity {
         for(int i = 0; i < numCubes; i++){
             cubes[i].setTag(myShuffledImages.get(i));
         }
-
-        /*
-         * Tags:
-         * 0 - ic_launcher
-         * 1 - nougat
-         * 2 - oreo
-         * 3 - marshmallow
-         * 4 - app_amor
-         * 5 - app_kcmprocessor
-         * 6 - app_kcmmidi
-         * 7 - app_gadu
-         * 8 - app_web
-         * 9 - app_pysol
-         * 10 - app_babelfish
-         * 11 - app_khelpcenter
-         * 12 - app_klaptopdaemon
-         * 13 - morty_black_and_white
-         * 14 - rick_angry
-         * 15 - meme
-         * 16 - pickle_rick
-         * 20 - star = match
-         */
     }
 
     private void createAllImagesList() {
         Log.e(TAG, "in createAllImagesList");
+
         allImages = new ArrayList<>();
-        allImages.add(R.drawable.android_nougat);
-        allImages.add(R.drawable.android_oreo);
-        allImages.add(R.drawable.androidmarshmallow);
-        allImages.add(R.drawable.app_amor);
-        allImages.add(R.drawable.app_kcmprocessor);
-        allImages.add(R.drawable.app_kcmmidi);
-        allImages.add(R.drawable.app_gadu);
-        allImages.add(R.drawable.app_web);
-        allImages.add(R.drawable.app_pysol);
-        allImages.add(R.drawable.app_babelfish);
-        allImages.add(R.drawable.app_khelpcenter);
-        allImages.add(R.drawable.app_klaptopdaemon);
-        allImages.add(R.drawable.morty_black_and_white);
+
+        allImages.add(R.drawable.harry_potter_all_guilds);
+        allImages.add(R.drawable.cnema_punisher);
+        allImages.add(R.drawable.comic_black_panther);
+        allImages.add(R.drawable.comic_flash);
+        allImages.add(R.drawable.comic_spiderman);
+        allImages.add(R.drawable.comics_batman);
+        allImages.add(R.drawable.comics_captain_america);
+        allImages.add(R.drawable.comics_mask_deadpool);
+        allImages.add(R.drawable.comics_superman);
+        allImages.add(R.drawable.comics_thor);
+        allImages.add(R.drawable.game_of_thrones_hodor);
+        allImages.add(R.drawable.game_of_thrones_jon_snow);
+        allImages.add(R.drawable.guardians_of_the_galaxy_baby_groot);
+        allImages.add(R.drawable.guardians_of_the_galaxy_rocket);
+        allImages.add(R.drawable.star_wars_master_joda);
+        allImages.add(R.drawable.morty);
         allImages.add(R.drawable.rick_angry);
-        allImages.add(R.drawable.meme);
         allImages.add(R.drawable.pickle_rick);
+        allImages.add(R.drawable.star_wars_chewbacca);
+        allImages.add(R.drawable.star_wars_jarjar_binks);
+        allImages.add(R.drawable.star_wars_java_the_hutt);
+        allImages.add(R.drawable.star_wars_r2d2);
+        allImages.add(R.drawable.star_wars_c3po);
+        allImages.add(R.drawable.star_wars_luke_skywalker);
+        allImages.add(R.drawable.harry_potter_all_guilds);
+        allImages.add(R.drawable.harry_potter_quidditch);
+        allImages.add(R.drawable.harry_potter_dumbledore);
+        allImages.add(R.drawable.harry_potter_dobby_house_elf);
+        allImages.add(R.drawable.harry_potter_flying_broom);
+        allImages.add(R.drawable.harry_potter_magic_hat);
 
         Collections.shuffle(allImages);
     }
@@ -346,29 +342,6 @@ public class GameActivity extends AppCompatActivity {
     //endregion
 
     //region TIMER&DELAY
-    private void startTimer() {
-        downTimer = new CountDownTimer(timerLevelNum + 1000, 1000) {
-            // timerLevelNum + 1000 -> because i want to show the timer reaches 0 seconds left
-            @Override
-            public void onTick(long l) {
-                Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
-                long timeRemaining = l/1000 - 1;
-                String timeRemainStr = "" + timeRemaining;
-                if(timeRemaining < 10)
-                    timeRemainStr = "0".concat(timeRemainStr);
-
-                timer.setText(timeRemainStr);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.i(TAG, "onFinish()");
-                Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
-                setResult(Activity.RESULT_FIRST_USER, new Intent());
-                finish();
-            }
-        }.start();
-    }
     /**
      * sub-class of AsyncTask
      */
@@ -427,6 +400,65 @@ public class GameActivity extends AppCompatActivity {
 
                 hideCubes(view1, view2);
             }
+        }
+    }
+
+    protected class MyCountDownTimer{
+
+        long countDownInterval = 0;
+        long millisRemaining =  0;
+
+        private CountDownTimer myTimer = null;
+        boolean isPaused = true;
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            this.countDownInterval = countDownInterval;
+            this.millisRemaining = millisInFuture;
+        }
+
+        public void start(){
+            isPaused = false;
+            myTimer = new CountDownTimer(millisRemaining, countDownInterval) {
+                // timerLevelNum + 1000 -> because i want to show the timer reaches 0 seconds left
+                @Override
+                public void onTick(long l) {
+                    millisRemaining = l;
+                    Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
+                    long timeRemaining = l / 1000;
+                    String timeRemainStr = "" + timeRemaining;
+                    if(timeRemaining < 10)
+                        timeRemainStr = "0".concat(timeRemainStr);
+
+                    timer.setText(timeRemainStr);
+                }
+
+                @Override
+                public void onFinish() {
+                    Log.i(TAG, "onFinish()");
+                    Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
+                    setResult(Activity.RESULT_FIRST_USER, new Intent());
+                    finish();
+                }
+            }.start();
+        }
+
+        public void cancel(){
+            if(myTimer!=null){
+                myTimer.cancel();
+            }
+            this.millisRemaining = 0;
+        }
+
+        public void resume(){
+            if(isPaused)
+                this.start();
+            isPaused = false;
+        }
+
+        public void pause(){
+            if(!isPaused)
+                myTimer.cancel();
+            isPaused = true;
         }
     }
     //endregion

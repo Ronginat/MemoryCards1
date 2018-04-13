@@ -128,7 +128,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
                 textResult.setText("Maybe next time");
             }
             else if(resultCode == Activity.RESULT_CANCELED)
-                textResult.setText("Oops, an error occurred");
+                textResult.setText("Oops, game canceled");
         }
     }//onActivityResult
 }
