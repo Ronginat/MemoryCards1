@@ -29,9 +29,6 @@ class Constants {
     static final String TImeMediumString = "45";
     static final String TimeHardString = "60";
 
-    static final int delay_for_hide_cubes = 1;
-    static final int delay_for_star_cubes = 2;
-
     static final int level_none = 0;
     static final int level_easy = 1;
     static final int level_medium = 2;

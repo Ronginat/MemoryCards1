@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 public class LevelsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
+    //region VARIABLES
     final String TAG = "Levels";
     int itemSelectedCheck = 0;
     String name = "", age = "";
@@ -22,7 +23,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     Button button;
     Spinner spinnerLevels;
     ArrayAdapter adapter;
-    private int options;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,7 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
 
-    private void bindUI()
-    {
+    private void bindUI() {
         Log.e(TAG,"in bindUI");
         textName = findViewById(R.id.levels_textView_name);
         textAge = findViewById(R.id.levels_textView_age);
@@ -55,25 +55,12 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
         textAge.setText("age: " + age);
         textResult.setVisibility(View.INVISIBLE);
         spinnerLevels = findViewById(R.id.levels_spinner_levels);
-        Log.e(TAG,"before setOnClick");
-
         spinnerLevels.setOnItemSelectedListener(this);
-        Log.e(TAG,"after setOnClick");
-        //spinnerLevels.setSelected(false);
 
-        //List<String> spinnerList = new ArrayList<>();
-        //spinnerList.add("");
-        //spinnerList.add("Easy");
-        //spinnerList.add("Medium");
-        //spinnerList.add("Hard");
-
-
-        //ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-          //      android.R.layout.simple_spinner_item, spinnerList);
         adapter = ArrayAdapter.createFromResource(this, R.array.spinner_options, android.R.layout.simple_spinner_item);
-        Log.e(TAG,"new dataAdapter");
+        Log.i(TAG,"new dataAdapter");
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Log.e(TAG,"setDropDown");
+        Log.i(TAG,"setDropDown");
         spinnerLevels.setAdapter(adapter);
 
         Log.e(TAG,"end bindUI");
@@ -137,10 +124,10 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
             if(resultCode == Activity.RESULT_OK){
                 textResult.setText("Well done!");
             }
-            else if (resultCode == Activity.RESULT_CANCELED) {
+            else if (resultCode == Activity.RESULT_FIRST_USER) {
                 textResult.setText("Maybe next time");
             }
-            else if(resultCode == Activity.RESULT_FIRST_USER)
+            else if(resultCode == Activity.RESULT_CANCELED)
                 textResult.setText("Oops, an error occurred");
         }
     }//onActivityResult

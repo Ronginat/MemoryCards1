@@ -23,6 +23,7 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
 
+    //region VARIABLES
     final String TAG = "TheGame";
     ImageButton[] cubes;
     String username = "default name", timerLevel = "";
@@ -31,12 +32,13 @@ public class GameActivity extends AppCompatActivity {
     View clickedCube;
     TextView textName, timer;
     TableLayout table;
-
     List<Integer> allImages, myShuffledImages;
 
     CountDownTimer downTimer = null;
     int clickedCubePos = -1;
+    //endregion
 
+    //region ACTIVITY_OVERRIDES
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.e(TAG,"e-onCreate");
@@ -52,14 +54,12 @@ public class GameActivity extends AppCompatActivity {
         }
 
         getMyLevelParameters();
-
         createAllImagesList();
 
         cubes = new ImageButton[numCubes];
 
         //name = intent.getStringExtra(MainActivity.EXTRA_MESSAGE_NAME);
         bindUI();
-
         populateTable();
         Log.e(TAG, "after populateTable()");
         createMyShuffledImages(); // and set the cubes tags
@@ -74,32 +74,7 @@ public class GameActivity extends AppCompatActivity {
         clickedCube = null;
         matchCounter = 0;
         timer.setText(timerLevel);
-
         startTimer();
-    }
-
-    private void startTimer() {
-        downTimer = new CountDownTimer(timerLevelNum + 1000, 1000) {
-            // timerLevelNum + 1000 -> because i want to show the timer reaches 0 seconds left
-            @Override
-            public void onTick(long l) {
-                Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
-                long timeRemaining = l/1000 - 1;
-                String timeRemainStr = "" + timeRemaining;
-                if(timeRemaining < 10)
-                    timeRemainStr = "0".concat(timeRemainStr);
-
-                timer.setText(timeRemainStr);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.i(TAG, "onFinish()");
-                Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
-                setResult(Activity.RESULT_CANCELED, new Intent());
-                finish();
-            }
-        }.start();
     }
 
     @Override
@@ -132,11 +107,12 @@ public class GameActivity extends AppCompatActivity {
                 break;
             default:
                 Toast.makeText(getApplicationContext(), Constants.game_error, Toast.LENGTH_SHORT).show();
-                setResult(Activity.RESULT_FIRST_USER, new Intent());
+                setResult(Activity.RESULT_CANCELED, new Intent());
         }
     }
+    //endregion
 
-
+    //region UI_METHODS
     private void populateTable() {
         Log.e(TAG,"in populateTable");
         for(int row = 0; row < cubes_per_RowCol; row++){
@@ -149,7 +125,9 @@ public class GameActivity extends AppCompatActivity {
             table.addView(tableRow);
 
             for(int col = 0; col < cubes_per_RowCol; col++){
-                if(row == cubes_per_RowCol - 1 && col == cubes_per_RowCol - 1 && cubes_per_RowCol % 2 == 1){
+                // check if this is an odd number of cubes and this is the last cube
+                // if so, hide that cube, because it's not part of the game
+                if(row == cubes_per_RowCol - 1 && col == cubes_per_RowCol - 1 && cubes_per_RowCol % 2 == 1) {
                     ImageButton temp = new ImageButton(this);
                     temp.setLayoutParams(new TableRow.LayoutParams(
                             TableRow.LayoutParams.WRAP_CONTENT,
@@ -182,7 +160,6 @@ public class GameActivity extends AppCompatActivity {
                     }
                 });
                 tableRow.addView(cubes[position]);
-
             }
         }
     }
@@ -207,36 +184,16 @@ public class GameActivity extends AppCompatActivity {
 
     private void bindUI() {
         Log.e(TAG,"in bindUI");
-        table = findViewById(R.id.gameHard_buttons_table);
+        table = findViewById(R.id.game_buttons_table);
         table.setStretchAllColumns(false);
         table.setShrinkAllColumns(false);
-        textName = findViewById(R.id.gameHard_textView_name);
-        timer = findViewById(R.id.gameHard_textView_timer);
+        textName = findViewById(R.id.game_textView_name);
+        timer = findViewById(R.id.game_textView_timer);
         textName.setText(String.format("%s: %s","name: " ,username));
-
-        /*
-         * Tags:
-         * 0 - ic_launcher
-         * 1 - nougat
-         * 2 - oreo
-         * 3 - marshmallow
-         * 4 - app_amor
-         * 5 - app_kcmprocessor
-         * 6 - app_kcmmidi
-         * 7 - app_gadu
-         * 8 - app_web
-         * 9 - app_pysol
-         * 10 - app_babelfish
-         * 11 - app_khelpcenter
-         * 12 - app_klaptopdaemon
-         *
-         * 20 - star = match
-         */
-
-
     }
+    //endregion
 
-
+    //region GAME_METHODS
     public void checkClickedView(View view, int position){
 
         MyAsyncTaskDelay asyncTaskDelay;
@@ -328,6 +285,28 @@ public class GameActivity extends AppCompatActivity {
         for(int i = 0; i < numCubes; i++){
             cubes[i].setTag(myShuffledImages.get(i));
         }
+
+        /*
+         * Tags:
+         * 0 - ic_launcher
+         * 1 - nougat
+         * 2 - oreo
+         * 3 - marshmallow
+         * 4 - app_amor
+         * 5 - app_kcmprocessor
+         * 6 - app_kcmmidi
+         * 7 - app_gadu
+         * 8 - app_web
+         * 9 - app_pysol
+         * 10 - app_babelfish
+         * 11 - app_khelpcenter
+         * 12 - app_klaptopdaemon
+         * 13 - morty_black_and_white
+         * 14 - rick_angry
+         * 15 - meme
+         * 16 - pickle_rick
+         * 20 - star = match
+         */
     }
 
     private void createAllImagesList() {
@@ -345,6 +324,10 @@ public class GameActivity extends AppCompatActivity {
         allImages.add(R.drawable.app_babelfish);
         allImages.add(R.drawable.app_khelpcenter);
         allImages.add(R.drawable.app_klaptopdaemon);
+        allImages.add(R.drawable.morty_black_and_white);
+        allImages.add(R.drawable.rick_angry);
+        allImages.add(R.drawable.meme);
+        allImages.add(R.drawable.pickle_rick);
 
         Collections.shuffle(allImages);
     }
@@ -360,7 +343,32 @@ public class GameActivity extends AppCompatActivity {
         }
         Log.e(TAG,"end setAllEnabled");
     }
+    //endregion
 
+    //region TIMER&DELAY
+    private void startTimer() {
+        downTimer = new CountDownTimer(timerLevelNum + 1000, 1000) {
+            // timerLevelNum + 1000 -> because i want to show the timer reaches 0 seconds left
+            @Override
+            public void onTick(long l) {
+                Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
+                long timeRemaining = l/1000 - 1;
+                String timeRemainStr = "" + timeRemaining;
+                if(timeRemaining < 10)
+                    timeRemainStr = "0".concat(timeRemainStr);
+
+                timer.setText(timeRemainStr);
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i(TAG, "onFinish()");
+                Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
+                setResult(Activity.RESULT_FIRST_USER, new Intent());
+                finish();
+            }
+        }.start();
+    }
     /**
      * sub-class of AsyncTask
      */
@@ -421,4 +429,5 @@ public class GameActivity extends AppCompatActivity {
             }
         }
     }
+    //endregion
 }
