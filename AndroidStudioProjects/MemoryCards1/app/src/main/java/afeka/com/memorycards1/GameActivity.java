@@ -7,7 +7,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -24,7 +23,7 @@ import java.util.List;
 public class GameActivity extends AppCompatActivity {
 
     //region VARIABLES
-    final String TAG = "TheGame";
+    //final String TAG = "TheGame";
     ImageButton[] cubes;
     String username = "default name", timerLevel = "";
     int matchCounter = 0, level = Constants.level_none, timerLevelNum;
@@ -42,7 +41,6 @@ public class GameActivity extends AppCompatActivity {
     //region ACTIVITY_OVERRIDES
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e(TAG,"e-onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
@@ -62,7 +60,6 @@ public class GameActivity extends AppCompatActivity {
         //name = intent.getStringExtra(MainActivity.EXTRA_MESSAGE_NAME);
         bindUI();
         populateTable();
-        Log.e(TAG, "after populateTable()");
         createMyShuffledImages(); // and set the cubes tags
 
         myTimer = new MyCountDownTimer(timerLevelNum, 500);
@@ -71,8 +68,6 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onStart() { // or onResume
         super.onStart();
-        Log.e(TAG,"e-onStart");
-
         clickedCube = null;
         matchCounter = 0;
         timer.setText(timerLevel);
@@ -81,7 +76,6 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.e(TAG, "e-onStop");
         super.onStop();
         // stop timer...
         myTimer.pause();
@@ -116,7 +110,6 @@ public class GameActivity extends AppCompatActivity {
 
     //region UI_METHODS
     private void populateTable() {
-        Log.e(TAG,"in populateTable");
         for(int row = 0; row < cubes_per_RowCol; row++){
             TableRow tableRow = new TableRow(this);
             tableRow.setLayoutParams(new TableLayout.LayoutParams(
@@ -151,13 +144,11 @@ public class GameActivity extends AppCompatActivity {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f
                 ));
-                Log.e(TAG,"init cube["+position+"]");
                 setCubeProperties(cubes[position]);
 
                 cubes[position].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.e(TAG,"cube["+FINAL_POSITION+"] clicked");
                         checkClickedView(cubes[FINAL_POSITION], FINAL_POSITION);
                     }
                 });
@@ -185,7 +176,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void bindUI() {
-        Log.e(TAG,"in bindUI");
         table = findViewById(R.id.game_buttons_table);
         table.setStretchAllColumns(false);
         table.setShrinkAllColumns(false);
@@ -201,21 +191,18 @@ public class GameActivity extends AppCompatActivity {
         MyAsyncTaskDelay asyncTaskDelay;
         if(clickedCube == null) // there isn't a first image revealed from current pair
         {
-            Log.e(TAG,"first cube of the pair");
             revealCube(view);
             clickedCube = view;
             clickedCubePos = position;
         }
 
         else if(clickedCubePos == position){ // same button clicked twice
-            Log.e(TAG,"same cube twice");
             ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
             clickedCube = null;
             clickedCubePos = -1;
         }
         else if(clickedCube.getTag().equals(view.getTag())) // found a match
         {
-            Log.e(TAG,"same cubes - match");
             revealCube(view);
             setAllEnabledOrDisabled(false);
             starCubes(clickedCube, view);
@@ -226,7 +213,6 @@ public class GameActivity extends AppCompatActivity {
         }
         else if(!clickedCube.getTag().equals(view.getTag())) // the two cubes are not a match
         {
-            Log.e(TAG,"different cubes - not match");
             revealCube(view);
             asyncTaskDelay = new MyAsyncTaskDelay(clickedCube, view);
             asyncTaskDelay.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -235,7 +221,6 @@ public class GameActivity extends AppCompatActivity {
         }
         else
         {
-            Log.e(TAG,"or else");
             //do nothing
         }
     }
@@ -255,11 +240,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void FoundAMatch() {
-        Log.e(TAG,"e-count+=2");
         matchCounter += 2;
         if(matchCounter == numCubes)
         {
-            Log.e(TAG,"found match finish");
             myTimer.cancel();
             Toast.makeText(getApplicationContext(), Constants.game_finish, Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK, new Intent());
@@ -275,7 +258,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void createMyShuffledImages() {
-        Log.e(TAG, "in createMyShuffledImages");
         myShuffledImages = new ArrayList<>();
         for(int i = 0; i < numCubes/2; i++){
             myShuffledImages.add(allImages.get(i));
@@ -290,20 +272,21 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void createAllImagesList() {
-        Log.e(TAG, "in createAllImagesList");
-
         allImages = new ArrayList<>();
 
-        allImages.add(R.drawable.harry_potter_all_guilds);
         allImages.add(R.drawable.cnema_punisher);
         allImages.add(R.drawable.comic_black_panther);
         allImages.add(R.drawable.comic_flash);
         allImages.add(R.drawable.comic_spiderman);
         allImages.add(R.drawable.comics_batman);
         allImages.add(R.drawable.comics_captain_america);
+        allImages.add(R.drawable.comics_captain_america_shield);
         allImages.add(R.drawable.comics_mask_deadpool);
         allImages.add(R.drawable.comics_superman);
         allImages.add(R.drawable.comics_thor);
+        allImages.add(R.drawable.comics_ironman_red);
+        allImages.add(R.drawable.comics_logan);
+        allImages.add(R.drawable.comics_jonny_blaze_ghost_rider);
         allImages.add(R.drawable.game_of_thrones_hodor);
         allImages.add(R.drawable.game_of_thrones_jon_snow);
         allImages.add(R.drawable.guardians_of_the_galaxy_baby_groot);
@@ -313,11 +296,13 @@ public class GameActivity extends AppCompatActivity {
         allImages.add(R.drawable.rick_angry);
         allImages.add(R.drawable.pickle_rick);
         allImages.add(R.drawable.star_wars_chewbacca);
-        allImages.add(R.drawable.star_wars_jarjar_binks);
+        allImages.add(R.drawable.star_wars_darth_vader);
         allImages.add(R.drawable.star_wars_java_the_hutt);
         allImages.add(R.drawable.star_wars_r2d2);
         allImages.add(R.drawable.star_wars_c3po);
         allImages.add(R.drawable.star_wars_luke_skywalker);
+        allImages.add(R.drawable.star_wars_master_joda);
+        allImages.add(R.drawable.star_wars_boss_nass);
         allImages.add(R.drawable.harry_potter_all_guilds);
         allImages.add(R.drawable.harry_potter_quidditch);
         allImages.add(R.drawable.harry_potter_dumbledore);
@@ -329,7 +314,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setAllEnabledOrDisabled(boolean bool){
-        Log.e(TAG,"in setAllEnabled");
         for (ImageButton cube: cubes) {
             if(bool && !cube.getTag().equals(Constants.starTag)){
                 cube.setEnabled(bool);
@@ -337,7 +321,6 @@ public class GameActivity extends AppCompatActivity {
             else
                 cube.setEnabled(false);
         }
-        Log.e(TAG,"end setAllEnabled");
     }
     //endregion
 
@@ -346,7 +329,7 @@ public class GameActivity extends AppCompatActivity {
      * sub-class of AsyncTask
      */
     protected class MyAsyncTaskDelay extends AsyncTask<Void, Void, String> {
-        final String Tag = "AsyncDelay";
+        //final String Tag = "AsyncDelay";
         View view1, view2;
 
         public MyAsyncTaskDelay(View alreadyClicked, View currentClicked){
@@ -356,13 +339,10 @@ public class GameActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            Log.i(TAG, "doInBackground()");
             try {
                 Thread.sleep(1000);
             }
             catch (InterruptedException e) {
-                Log.i(Tag, e.getMessage());
-                Log.e(TAG, "doInBackground EXCEPTION");
                 return null;
             }
 
@@ -373,38 +353,33 @@ public class GameActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.e(TAG, "onPreExecute()");
             for(ImageButton cube : cubes){
                 cube.setEnabled(false);
             }
-            Log.e(TAG, "finish onPreExecute()");
         }
 
         // -- called from the publish progress
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
-            Log.i(TAG, "onProgressUpdate(): " + String.valueOf(values[0]));
         }
 
         // -- called as soon as doInBackground method completes
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.e(TAG, "onPostExecute(): " + result);
             if(!result.equals(null)) {
                 for (ImageButton cube : cubes) {
                     if (!cube.getTag().equals(Constants.starTag))
                         cube.setEnabled(true);
                 }
-
                 hideCubes(view1, view2);
             }
         }
     }
 
     protected class MyCountDownTimer{
-
+        //final String Tag = "CountDownTimer";
         long countDownInterval = 0;
         long millisRemaining =  0;
 
@@ -423,7 +398,6 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onTick(long l) {
                     millisRemaining = l;
-                    Log.i(TAG, "onTick(): " + String.valueOf(l/1000));
                     long timeRemaining = l / 1000;
                     String timeRemainStr = "" + timeRemaining;
                     if(timeRemaining < 10)
@@ -434,7 +408,6 @@ public class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-                    Log.i(TAG, "onFinish()");
                     Toast.makeText(getApplicationContext(), Constants.game_failed, Toast.LENGTH_SHORT).show();
                     setResult(Activity.RESULT_FIRST_USER, new Intent());
                     finish();

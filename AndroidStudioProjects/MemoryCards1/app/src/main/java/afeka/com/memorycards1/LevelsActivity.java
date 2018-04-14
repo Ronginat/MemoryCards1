@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,11 +14,10 @@ import android.widget.Toast;
 public class LevelsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     //region VARIABLES
-    final String TAG = "Levels";
+    //final String TAG = "Levels";
     int itemSelectedCheck = 0;
     String name = "", age = "";
     TextView textName, textAge, textResult;
-    Button button;
     Spinner spinnerLevels;
     ArrayAdapter adapter;
     //endregion
@@ -35,7 +32,6 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
 
         if(b!=null)
         {
-            Log.e(TAG,"trying to get name&age");
             name =(String) b.get(MainActivity.EXTRA_MESSAGE_NAME);
             age =(String) b.get(MainActivity.EXTRA_MESSAGE_AGE);
         }
@@ -46,7 +42,6 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
 
 
     private void bindUI() {
-        Log.e(TAG,"in bindUI");
         textName = findViewById(R.id.levels_textView_name);
         textAge = findViewById(R.id.levels_textView_age);
         textResult = findViewById(R.id.levels_textView_result);
@@ -58,57 +53,39 @@ public class LevelsActivity extends AppCompatActivity implements AdapterView.OnI
         spinnerLevels.setOnItemSelectedListener(this);
 
         adapter = ArrayAdapter.createFromResource(this, R.array.spinner_options, android.R.layout.simple_spinner_item);
-        Log.i(TAG,"new dataAdapter");
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Log.i(TAG,"setDropDown");
         spinnerLevels.setAdapter(adapter);
-
-        Log.e(TAG,"end bindUI");
     }
 
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        Log.e(TAG,"in ItemSelected");
-        if(false){
-            Toast.makeText(getBaseContext(),adapterView.getItemAtPosition(i) + " is selected", Toast.LENGTH_LONG).show();
-            itemSelectedCheck++;
+        int level = Constants.level_none;
+        String selection = adapterView.getItemAtPosition(i).toString();
+        Intent intent = null;
+        switch (selection) {
+            case "Easy 2x2":
+                level = Constants.level_easy;
+                intent = new Intent(this, GameActivity.class);
+                break;
+            case "Medium 4x4":
+                level = Constants.level_medium;
+                intent = new Intent(this, GameActivity.class);
+                break;
+            case "Hard 5x5":
+                level = Constants.level_hard;
+                intent = new Intent(this, GameActivity.class);
+                break;
+            case "Choose a level":
+                break;
+            default:
+                Toast.makeText(getApplicationContext(), Constants.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
         }
-        else {
-            int level = Constants.level_none;
-            String selection = adapterView.getItemAtPosition(i).toString();
-            Intent intent = null;
-            switch (selection) {
-                case "Easy 2x2":
-                    level = Constants.level_easy;
-                    Log.e(TAG, "Easy");
-                    intent = new Intent(this, GameActivity.class);
-                    break;
-                case "Medium 4x4":
-                    level = Constants.level_medium;
-                    Log.e(TAG, "Medium");
-                    intent = new Intent(this, GameActivity.class);
-                    break;
-                case "Hard 5x5":
-                    level = Constants.level_hard;
-                    Log.e(TAG, "Hard");
-                    intent = new Intent(this, GameActivity.class);
-                    break;
-                case "Choose a level":
-                    break;
-                default:
-                    Toast.makeText(getApplicationContext(), Constants.wrong_input_levels_activity, Toast.LENGTH_SHORT).show();
-
-            }
-
-            if (intent != null) {
-                Log.e(TAG, "calling intent");
-                intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
-                intent.putExtra(MainActivity.EXTRA_MESSAGE_LEVEL, level);
-                startActivityForResult(intent, 1);
-            }
+        if (intent != null) {
+            intent.putExtra(MainActivity.EXTRA_MESSAGE_NAME, name);
+            intent.putExtra(MainActivity.EXTRA_MESSAGE_LEVEL, level);
+            startActivityForResult(intent, 1);
         }
-        Log.e(TAG,"end ItemSelected");
     }
 
     @Override
