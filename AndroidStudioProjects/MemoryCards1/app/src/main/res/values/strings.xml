@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MemoryCards1</string>
+
+    <string-array name="spinner_options">
+        <item name="Choose a level">Choose a level</item>
+        <item name="Easy">Easy 2x2</item>
+        <item name="Medium">Medium 4x4</item>
+        <item name="Hard">Hard 5x5</item>
+    </string-array>
+</resources>
