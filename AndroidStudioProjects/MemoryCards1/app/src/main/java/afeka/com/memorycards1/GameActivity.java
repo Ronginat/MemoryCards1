@@ -197,7 +197,8 @@ public class GameActivity extends AppCompatActivity {
         }
 
         else if(clickedCubePos == position){ // same button clicked twice
-            ((ImageButton)view).setImageResource(R.mipmap.ic_launcher);
+            asyncTaskDelay = new MyAsyncTaskDelay(view, view);
+            asyncTaskDelay.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             clickedCube = null;
             clickedCubePos = -1;
         }
