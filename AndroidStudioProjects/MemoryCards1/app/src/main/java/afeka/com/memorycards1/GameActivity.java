@@ -181,7 +181,7 @@ public class GameActivity extends AppCompatActivity {
         table.setShrinkAllColumns(false);
         textName = findViewById(R.id.game_textView_name);
         timer = findViewById(R.id.game_textView_timer);
-        textName.setText(String.format("%s: %s","name: " ,username));
+        textName.setText(String.format("%s: %s","name" ,username));
     }
     //endregion
 
@@ -341,7 +341,7 @@ public class GameActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(800);
             }
             catch (InterruptedException e) {
                 return null;
